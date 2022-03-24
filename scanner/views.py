@@ -6,5 +6,7 @@ def index(request):
     scans = 200
     return render(request, 'index.html', {'scans': scans})
 
-def qrcode(request):
-    return render(request, 'qrcode.html')
+def scan(request):
+    mode = request.POST['mode']
+    message = mode
+    return render(request, 'scan.html', {"message":message})
