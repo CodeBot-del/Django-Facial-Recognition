@@ -141,7 +141,7 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a name="container" class="nav-link" href="">
               <i class="typcn typcn-device-desktop menu-icon"></i>
               <span class="menu-title">Home</span>
               
@@ -170,7 +170,7 @@
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-start flex-wrap">
                         <div>
-                          <img src="{%static 'images/view.webp' %}" alt="view" style="width:100%; height: 100%;">
+                          <img src="data:image/jpeg;base64, {{img}}" alt="view" style="width:100%; height: 100%;">
                           
                         </div>
                         <div class="d-flex flex-wrap mt-1 mt-md-0"></div>
@@ -246,49 +246,16 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6 col-xl-4 grid-margin stretch-card">
-              <div class="row">
-                <div class="col-md-12 grid-margin stretch-card">
-                  <div class="card newsletter-card bg-gradient-warning">
-                    <div class="card-body">
-                      <div class="d-flex flex-column align-items-center justify-content-center h-100">
-                        <h5 class="mb-3 text-white">Newsletter</h5>
-                        <form class="form d-flex flex-column align-items-center justify-content-between w-100">
-                          <div class="form-group mb-2 w-100">
-                            <input type="text" class="form-control" placeholder="email address">
-                          </div>
-                          <button class="btn btn-danger btn-rounded mt-1" type="submit">Subscribe</button>
-                        </form>
-                      </div>
-                    </div>
+            <div class="col-xl-4 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body border-bottom">
+                  <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="mb-2 mb-md-0 text-uppercase font-weight-medium">Register New Face</h6>
+                    
                   </div>
                 </div>
-                <div class="col-md-12 stretch-card">
-                  <div class="card profile-card bg-gradient-primary">
-                    <div class="card-body">
-                      <div class="row align-items-center h-100">
-                        <div class="col-md-4">
-                          <figure class="avatar mx-auto mb-4 mb-md-0">
-                            <img src="{%static 'images/alpha.png' %}" alt="avatar">
-                          </figure>
-                        </div>
-                        <div class="col-md-8">
-                          <h5 class="text-white text-center text-md-left">Alpha AI</h5>
-                          <p class="text-white text-center text-md-left">alphai@gmail.com</p>
-                          <div class="d-flex align-items-center justify-content-between info pt-2">
-                            <div>
-                              <p class="text-white font-weight-bold">Released</p>
-                              <p class="text-white font-weight-bold">Headquaters</p>
-                            </div>
-                            <div>
-                              <p class="text-white">17 April 22</p>
-                              <p class="text-white">Tanzania</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="card-body">
+                  
                 </div>
               </div>
             </div>
@@ -301,7 +268,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <canvas id="sales-chart-d" height="320"></canvas>
+                  
                 </div>
               </div>
             </div>
