@@ -7,6 +7,8 @@ import numpy as np
 import face_recognition
 import os
 from deepface import DeepFace 
+from pyzbar.pyzbar import decode  
+
 
 
 # Create your views here.
@@ -29,8 +31,8 @@ def scan(request):
     
     if mode == "Facial Scan":
         
-        image = "/home/egovridc/Desktop/rielle.jpg"
-        db_path = '/home/egovridc/Desktop/images'
+        image = "/home/egovridc/Desktop/FaceProject/rielle.jpg"
+        db_path = '/home/egovridc/Desktop/FaceProject/images'
         model_name = 'Facenet'
         
         #pass a data frame to store results 
@@ -73,23 +75,50 @@ def scan(request):
                 
                 return render(request, 'scan.html', {"message":message, "img": new_img})
     
-    else:
-        picha = "/home/egovridc/Desktop/qrcode.png"
-        new_image = cv2.imread(picha)
-        _, frame_buff = cv2.imencode('.jpg', new_image)
-        im_bytes = frame_buff.tobytes()
-        frame_b64 = base64.b64encode(im_bytes)
-        new_img = frame_b64.decode()
-        return render(request, 'scan.html', {"message":message, "img": new_img})
+    elif mode == "QR & Bar Code":
+        
+        cap = "/home/egovridc/Desktop/FaceProject/card.png"
+        qrimage = cv2.imread(cap)
         
         
+                
         
-               
-    
-    # _, frame_buff = cv2.imencode('.jpg', frame) 
-    # im_bytes = frame_buff.tobytes()
-    # frame_b64 = base64.b64encode(im_bytes)
-    # new_img = frame_b64.decode()
+        
+        with open('/home/egovridc/Desktop/FaceProject/data.txt') as f:
+            Authenticated = f.read().splitlines()
+            
+        while True:
+            #in case of multiple barcodes
+            for barcode in decode(qrimage):
+                myData = barcode.data.decode('utf-8')
+                print(myData)
+                
+                if myData in Authenticated:
+                    myOutput = 'Authorized'
+                    myColor = (0,255,0)
+                else:
+                    myOutput = 'Un-Authorized'
+                    myColor = (0,0,255)
+                    
+                #get the polygon points from the decoder
+                pts = np.array([barcode.polygon], np.int32)
+                pts = pts.reshape((-1,1,2))
+                #draw polygon around qr code
+                cv2.polylines(qrimage, [pts], True, myColor, 5)
+                pts2 = barcode.rect
+                new_image = cv2.putText(qrimage, myOutput, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_COMPLEX, 2.5, myColor, 2)
+
+                _, frame_buff = cv2.imencode('.jpg', new_image)
+                im_bytes = frame_buff.tobytes()
+                frame_b64 = base64.b64encode(im_bytes)
+                new_img = frame_b64.decode()
+                
+                return render(request, 'scan.html', {"message":message, "img": new_img})
+                
+                
+                
+        
+        
     
 
 
