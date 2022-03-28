@@ -150,6 +150,7 @@
           <li class="nav-item">
             <form action="scan" method="post">
               {% csrf_token %}
+              <input type="file" name="filename" class="form-control">
               <select class="form-control" name="mode">
                 <option>Select Mode</option>
                 <option>Facial Scan</option>
