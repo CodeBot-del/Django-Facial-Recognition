@@ -150,13 +150,14 @@
           <li class="nav-item">
             <form action="scan" method="post">
               {% csrf_token %}
-              <input type="file" name="filename" class="form-control">
+              <input type="file" name="filename" class="form-control" id="image_input">
               <select class="form-control" name="mode">
                 <option>Select Mode</option>
                 <option>Facial Scan</option>
                 <option>QR & Bar Code</option>
-              </select>
-              <input type="submit" name="submit" value="Start" class="btn btn-outline-secondary mt-1" />
+              </select> 
+               
+              <button type="submit" class="btn btn-outline-secondary mt-1">start</button>
             </form>
           </li>
           <li class="nav-item">
@@ -338,6 +339,12 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+
+  
+
+
+
+
 
   <!-- base:js -->
   <script src="{%static 'vendors/js/vendor.bundle.base.js' %}"></script>

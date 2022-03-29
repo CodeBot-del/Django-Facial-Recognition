@@ -8,6 +8,7 @@ import face_recognition
 import os
 from deepface import DeepFace 
 from pyzbar.pyzbar import decode  
+from . models import Upload
 
 
 
@@ -26,18 +27,21 @@ def findEncodings(images):
     return encodeList
 
 def scan(request):
+    
     mode = request.POST['mode']
     file = request.POST['filename']
     message = mode
-    
+            
     if mode == "Facial Scan":
         
         image = "/home/egovridc/Desktop/FaceProject/"+file
+        # image = Upload.objects.latest('image')
+        
         db_path = '/home/egovridc/Desktop/FaceProject/images'
         model_name = ['Facenet', 'Dlib', 'OpenFace','ArcFace']
         
         #pass a data frame to store results 
-        df = DeepFace.find(img_path = image, db_path = db_path, model_name = model_name[3])
+        df = DeepFace.find(img_path = image, db_path = db_path)
         
         if not df.empty:
             #if dataframe returns similar faces, pass message as Authorized 
@@ -78,8 +82,8 @@ def scan(request):
     
     elif mode == "QR & Bar Code":
         
-        
-        cap = "/home/egovridc/Desktop/FaceProject/card3.png"
+        file = request.POST['filename']
+        cap = "/home/egovridc/Desktop/FaceProject/"+file
         qrimage = cv2.imread(cap)
         
         with open('/home/egovridc/Desktop/FaceProject/data.txt') as f:
@@ -112,7 +116,7 @@ def scan(request):
                 new_img = frame_b64.decode()
                 
                 return render(request, 'scan.html', {"message":message, "img": new_img})
-                
+                    
                 
                 
         
