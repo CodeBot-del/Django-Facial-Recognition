@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
 import cv2
 import base64
 from io import BytesIO
@@ -29,19 +30,28 @@ def findEncodings(images):
 def scan(request):
     
     mode = request.POST['mode']
-    file = request.POST['filename']
+    # file = request.POST['filename']
     message = mode
+    if request.method == 'POST' and request.FILES['upload']:
+        upload = request.FILES['upload']
+        fss = FileSystemStorage()
+        file = fss.save(upload.name, upload)
+        file_url = fss.url(file)    
+        image = '/home/egovridc/Desktop/Steve/DjangoTutorial/alpha' + file_url
+    
+    
             
     if mode == "Facial Scan":
         
-        image = "/home/egovridc/Desktop/FaceProject/"+file
+        
         # image = Upload.objects.latest('image')
+        # image = '/home/egovridc/Desktop/FaceProject/3.jpg'
         
         db_path = '/home/egovridc/Desktop/FaceProject/images'
-        model_name = ['Facenet', 'Dlib', 'OpenFace','ArcFace']
+        model_name = ['Facenet', 'OpenFace','ArcFace']
         
         #pass a data frame to store results 
-        df = DeepFace.find(img_path = image, db_path = db_path)
+        df = DeepFace.find(img_path = image, db_path = db_path, model_name = model_name[2])
         
         if not df.empty:
             #if dataframe returns similar faces, pass message as Authorized 
@@ -82,8 +92,8 @@ def scan(request):
     
     elif mode == "QR & Bar Code":
         
-        file = request.POST['filename']
-        cap = "/home/egovridc/Desktop/FaceProject/"+file
+        # file = request.POST['filename']
+        cap = image
         qrimage = cv2.imread(cap)
         
         with open('/home/egovridc/Desktop/FaceProject/data.txt') as f:

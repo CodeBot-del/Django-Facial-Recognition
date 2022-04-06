@@ -46,7 +46,19 @@
           <li class="nav-item nav-date dropdown">
             <a class="nav-link d-flex justify-content-center align-items-center" href="javascript:;">
               <!--Display date here-->
-              <h6 class="date mb-0">Today : Mar 24</h6>
+              
+              <h6 class="date mb-0">
+                <script>
+                  var today = new Date();
+                  var dd = String(today.getDate()).padStart(2, '0');
+                  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                  var yyyy = today.getFullYear();
+
+                  today = mm + ' ' + dd;
+                  document.write('Today: '+today);
+                </script>
+
+              </h6>
               <i class="typcn typcn-calendar"></i>
             </a>
           </li>
@@ -148,9 +160,9 @@
           
           
           <li class="nav-item">
-            <form action="scan" method="post">
+            <form action="scan" method="post" enctype="multipart/form-data">
               {% csrf_token %}
-              <input type="file" name="filename" class="form-control" id="image_input">
+              <input type="file" name="upload" class="form-control" id="image_input">
               <select class="form-control" name="mode">
                 <option>Select Mode</option>
                 <option>Facial Scan</option>
