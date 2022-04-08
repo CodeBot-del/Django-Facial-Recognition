@@ -172,6 +172,16 @@
               <button type="submit" class="btn btn-outline-secondary mt-1">start</button>
             </form>
           </li>
+          <li class="nav-item mt-4">
+              <i class="typcn typcn-star menu-icon" style="font-size: 24px;"></i>
+              <span class="menu-title">Premium</span>
+          </li>
+          <li class="nav-item">
+            <form action="stream" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-secondary mt-1">Real Time Scanning</button>
+            </form>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="">
               <i class="typcn typcn-info-large menu-icon"></i>
@@ -194,7 +204,7 @@
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-start flex-wrap">
                         <div>
-                          <img src="{%static 'images/alpha ai.png' %}" alt="view" style="width:500px; height: 500px;">
+                          <img src="{%static 'images/alpha ai.png' %}" alt="view" style="width:100%; height: 500px;">
                           
                         </div>
                         <div class="d-flex flex-wrap mt-1 mt-md-0"></div>

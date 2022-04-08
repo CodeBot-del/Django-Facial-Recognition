@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, StreamingHttpResponse
+from django.views.decorators import gzip
 import cv2
 import base64
+import threading
 from io import BytesIO
 from PIL import Image
 import numpy as np
@@ -10,6 +13,7 @@ import os
 from deepface import DeepFace 
 from pyzbar.pyzbar import decode  
 from . models import Upload
+import os
 
 
 
@@ -126,8 +130,101 @@ def scan(request):
                 new_img = frame_b64.decode()
                 
                 return render(request, 'scan.html', {"message":message, "img": new_img})
+
+@gzip.gzip_page                  
+def stream(request):
+    try:
+        cam = VideoCamera()
+        return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace; boundary=frame")
+    except:
+        pass
+    return render(request, 'live.html')
+
+#to capture video and perform recognition class
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture("http://10.42.0.45:8080/video")
+        (self.grabbed, self.frame) = self.video.read()
+        threading.Thread(target=self.update, args=()).start()
+    
+    def __del__(self):
+        self.video.release() 
+    
+    def get_frame(self):
+        path = '/home/egovridc/Desktop/Steve/FaceRecognitionResearch/imagesRecognition' 
+        images = []
+        classNames = []
+        myList = os.listdir(path)
+        print(myList)
+        
+        #import the images from the directory
+        for cl in myList:
+            curImg = cv2.imread(f'{path}/{cl}')
+            images.append(curImg)
+            classNames.append(os.path.splitext(cl)[0])
+            
+        print(classNames)
+        
+        encodeListKnown = findEncodings(images)  
+        print('################------ Encoding Complete ------################') 
+        print(encodeListKnown)
+        # some very useful functions here 
+        while True:
+            image = self.frame
+            imgS = cv2.resize(image,(0,0),None,0.25,0.25) #compress the image to improve performance
+            imgS = cv2.cvtColor(image,cv2.COLOR_BGR2RGB) #convert the image to RGB
+            
+            facesCurFrame = face_recognition.face_locations(imgS) #find location of all faces in the image
+            encodesCurFrame = face_recognition.face_encodings(imgS, facesCurFrame) #find encodings of all the faces in the image
+
+            for encodeFace, faceLoc in zip(encodesCurFrame, facesCurFrame): #this grabs both the encodings and the locations of the faces in the current frame
+                matches = face_recognition.compare_faces(encodeListKnown, encodeFace)  #compare the image encodings with the known encodings
+                faceDis = face_recognition.face_distance(encodeListKnown, encodeFace)  #Find how much the faces differ between the image and the known
+                # print(faceDis)
+                matchIndex = np.argmin(faceDis)  #take the lowest face distance to be the match 
+                # if matchIndex < 0.3:    # accept match index lower than 0.5... for the sake of accuracy
+                #     matchIndex = matchIndex
                     
                 
+                #hii code apa chini ni ya kuchora zile boxes za green kwa wwatu verified, na red kwa wasiokua verified
+                
+                if matches[matchIndex]:
+                    
+                    
+                    name = classNames[matchIndex].upper()  #Get the Name of the image(person) that matched successfully
+                    # print(name)
+                    y1,x1,y2,x2 = faceLoc
+                    # y1,x1,y2,x2 = y1*4,x1*4,y2*4,x2*4 
+                    cv2.rectangle(image,(x1,y1),(x2,y2),(0,255,0),2)
+                    cv2.rectangle(image, (x1,y2-35),(x2,y2),(0,255,0), cv2.FILLED) #starting point on height reduced by -35 to be a little lower so we can write the name on top of this rectangle
+                    cv2.putText(image,name, (x2, y2-6), cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
+                    # convert video stream kwenda jpg then kwenda bytes kwa ajili ya kui display kene browser
+                    _, jpeg = cv2.imencode('.jpg', image) #pitisha izi code baada ya kuchora bounding boxes
+                    return jpeg.tobytes()
+                    
+                    
+                    
+                else:
+                    name = "unknown" 
+                    y1,x1,y2,x2 = faceLoc
+                    # y1,x1,y2,x2 = y1*4,x1*4,y2*4,x2*4 
+                    cv2.rectangle(image, (x1,y1), (x2,y2), (0,0,255),2)
+                    cv2.rectangle(image, (x1,y2-35), (x2,y2), (0,0,255), cv2.FILLED) #starting point on height reduced by -35 to be a little lower so we can write the name on top of this rectangle
+                    cv2.putText(image, name, (x2, y2-6), cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
+                    _, jpeg = cv2.imencode('.jpg', image) #pitisha izi code baada ya kuchora bounding boxes
+                    return jpeg.tobytes()
+    
+    def update(self):
+        while True:
+            (self.grabbed, self.frame) = self.video.read()
+            
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield(b'--frame\r\n'
+              b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+    
+          
                 
         
         
