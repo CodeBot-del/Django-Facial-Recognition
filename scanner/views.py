@@ -142,6 +142,7 @@ def stream(request):
 
 #to capture video and perform recognition class
 class VideoCamera(object):
+    
     def __init__(self):
         self.video = cv2.VideoCapture("http://10.42.0.45:8080/video")
         (self.grabbed, self.frame) = self.video.read()
@@ -223,10 +224,61 @@ def gen(camera):
         frame = camera.get_frame()
         yield(b'--frame\r\n'
               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        
+def gen2(camera2):
+    while True:
+        frame2 = camera2.get_frame()
+        yield(b'--frame\r\n'
+              b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n\r\n')
     
           
-                
+@gzip.gzip_page                  
+def qrstream(request):
+    try:
+        cam = VideoCamera2()
+        return StreamingHttpResponse(gen2(cam), content_type="multipart/x-mixed-replace; boundary=frame")
+    except:
+        pass
+    return render(request, 'qrlive.html')      
         
+class VideoCamera2(object):
+    
+    def __init__(self):
+        self.video = cv2.VideoCapture("http://10.42.0.45:8080/video")
+        (self.qrgrabbed, self.qrframe) = self.video.read()
+        threading.Thread(target=self.update, args=()).start()
+    
+    def __del__(self):
+        self.video.release() 
+    
+    def get_frame(self):
+        imageqr = self.qrframe
+        with open('/home/egovridc/Desktop/FaceProject/data.txt') as f:
+            Authenticated = f.read().splitlines()
+            
+        while True:
+            #in case of multiple barcodes
+            for barcode in decode(imageqr):
+                myData = barcode.data.decode('utf-8')
+                print(myData)
+                
+                if myData in Authenticated:
+                    myOutput = 'Authorized'
+                    myColor = (0,255,0)
+                else:
+                    myOutput = 'Un-Authorized'
+                    myColor = (0,0,255)
+                    
+                #get the polygon points from the decoder
+                pts = np.array([barcode.polygon], np.int32)
+                pts = pts.reshape((-1,1,2))
+                #draw polygon around qr code
+                cv2.polylines(imageqr, [pts], True, myColor, 5)
+                pts2 = barcode.rect
+                new_image = cv2.putText(imageqr, myOutput, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_COMPLEX, 2.5, myColor, 2)
+                _, jpeg = cv2.imencode('.jpg', new_image) #pitisha izi code baada ya kuchora bounding boxes
+                return jpeg.tobytes()
+                
         
     
 

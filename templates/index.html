@@ -177,9 +177,18 @@
               <span class="menu-title">Premium</span>
           </li>
           <li class="nav-item">
+            <p class="menu-title">Real Time Recognition</p>
+          </li>
+          <li class="nav-item">
             <form action="stream" method="post">
               {% csrf_token %}
-              <button type="submit" class="btn btn-outline-secondary mt-1">Real Time Scanning</button>
+              <button type="submit" class="btn btn-outline-secondary mt-1" style="padding-right: 44px;">Facial Scan</button>
+            </form>
+          </li>
+          <li class="nav-item">
+            <form action="qrstream" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-secondary mt-1">QR & Bar Code </button>
             </form>
           </li>
           <li class="nav-item">
