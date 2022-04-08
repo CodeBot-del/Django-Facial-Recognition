@@ -225,18 +225,13 @@ def gen(camera):
         yield(b'--frame\r\n'
               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
         
-def gen2(camera2):
-    while True:
-        frame2 = camera2.get_frame()
-        yield(b'--frame\r\n'
-              b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n\r\n')
-    
+
           
 @gzip.gzip_page                  
 def qrstream(request):
     try:
         cam = VideoCamera2()
-        return StreamingHttpResponse(gen2(cam), content_type="multipart/x-mixed-replace; boundary=frame")
+        return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace; boundary=frame")
     except:
         pass
     return render(request, 'qrlive.html')      
@@ -258,6 +253,7 @@ class VideoCamera2(object):
             
         while True:
             #in case of multiple barcodes
+            
             for barcode in decode(imageqr):
                 myData = barcode.data.decode('utf-8')
                 print(myData)
@@ -275,9 +271,13 @@ class VideoCamera2(object):
                 #draw polygon around qr code
                 cv2.polylines(imageqr, [pts], True, myColor, 5)
                 pts2 = barcode.rect
-                new_image = cv2.putText(imageqr, myOutput, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_COMPLEX, 2.5, myColor, 2)
-                _, jpeg = cv2.imencode('.jpg', new_image) #pitisha izi code baada ya kuchora bounding boxes
+                cv2.putText(imageqr, myOutput, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_COMPLEX, 2.5, myColor, 2)
+                _, jpeg = cv2.imencode('.jpg', imageqr) #pitisha izi code baada ya kuchora bounding boxes
                 return jpeg.tobytes()
+            
+    def update(self):
+        while True:
+            (self.qrgrabbed, self.qrframe) = self.video.read()
                 
         
     
