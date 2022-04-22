@@ -33,8 +33,8 @@
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="navbar-brand-wrapper d-flex justify-content-center">
         <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
-          <a class="navbar-brand brand-logo" href="index.html"><img src="{%static 'images/alpha ai2.png'%}" alt="logo"/></a>
-          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{%static 'images/alpha ai2.png' %}" alt="logo"/></a>
+          <a class="navbar-brand brand-logo" href="index.html"><img src="{%static 'images/alpha ai.png'%}" alt="logo"/></a>
+          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{%static 'images/alpha ai.png' %}" alt="logo"/></a>
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
             <span class="typcn typcn-th-menu"></span>
           </button>
@@ -162,7 +162,7 @@
           <li class="nav-item">
             <form action="scan" method="post" enctype="multipart/form-data">
               {% csrf_token %}
-              <input type="file" name="upload" class="form-control" id="image_input">
+              {{form.as_p}}
               <select class="form-control" name="mode">
                 <option>Select Mode</option>
                 <option>Facial Scan</option>
@@ -225,19 +225,19 @@
               </div>
             </div>
             <div class="col-xl-6 grid-margin stretch-card flex-column">
-              <h5 class="mb-2 text-titlecase mb-4">Scan statistics</h5>
+              <h5 class="mb-2 text-titlecase mb-4" style="color: #00000000">Get Started</h5>
               <div class="row h-100">
                 <div class="col-md-12 stretch-card">
                   <div class="card">
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-start flex-wrap">
                         <div>
-                          <p class="mb-3">Todays Scan's</p>
-                          <h3>{{scans}}</h3>
+                          <img src="{%static 'images/apps.jpg' %}" alt="view" style="width:100%; height: 500px;">
+                          
                         </div>
-                        <div id="income-chart-legend" class="d-flex flex-wrap mt-1 mt-md-0"></div>
+                        <div class="d-flex flex-wrap mt-1 mt-md-0"></div>
                       </div>
-                      <canvas id="income-chart"></canvas>
+                      
                     </div>
                   </div>
                 </div>

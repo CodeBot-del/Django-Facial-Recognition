@@ -1,13 +1,15 @@
 from django.urls import path
-from . import views
+from .views import *
 
 app_name = "scanner"
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('scan', views.scan, name='scan'),
-    path('stream', views.stream, name='stream'),
-    path('qrstream', views.qrstream, name='qrstream'),
+    path('', index, name='index'),
+    path('scan', scan, name='scan'),
+    path('stream', stream, name='stream'),
+    path('qrstream', qrstream, name='qrstream'),
+    path('original/', ListCreateOriginalImage.as_view(), name='original-list'),
+    path('scanned/', ListCreateScannedImage.as_view(), name='scanned-list'),
     
     
 ]

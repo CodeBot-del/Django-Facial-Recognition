@@ -12,15 +12,19 @@ import face_recognition
 import os
 from deepface import DeepFace 
 from pyzbar.pyzbar import decode  
-from . models import Upload
+# from . models import Upload
 import os
+from .models import Image
+from .form import ImageForm
 
-
-
+from rest_framework.generics import ListCreateAPIView,  RetrieveUpdateDestroyAPIView
+from .serializers import ScannedImageSerializer, OriginalImageSerializer
+from .models import OriginalImage, ScannedImage
 # Create your views here.
 def index(request):
     scans = 200
-    return render(request, 'index.html', {'scans': scans})
+    form = ImageForm()
+    return render(request, 'index.html', {'scans': scans, "form":form})
 
 #function to encode all images in the directory
 def findEncodings(images):
@@ -34,15 +38,23 @@ def findEncodings(images):
 def scan(request):
     
     mode = request.POST['mode']
-    # file = request.POST['filename']
-    message = mode
-    if request.method == 'POST' and request.FILES['upload']:
-        upload = request.FILES['upload']
-        fss = FileSystemStorage()
-        file = fss.save(upload.name, upload)
-        file_url = fss.url(file)    
-        image = '/home/egovridc/Desktop/Steve/DjangoTutorial/alpha' + file_url
     
+    message = mode
+    if request.method == "POST":
+        form=ImageForm(data=request.POST,files=request.FILES)
+        if form.is_valid():
+            form.save()
+            file = request.FILES
+            file = file['image'].name
+            # obj=form.instance
+    # if request.method == 'POST' and request.FILES['upload']:
+    #     upload = request.FILES['upload']
+    #     fss = FileSystemStorage()
+    #     file = fss.save(upload.name, upload)
+    #     file_url = fss.url(file)    
+    #     image = '/home/egovridc/Desktop/Steve/DjangoTutorial/alpha' + file_url
+    
+    image = '/home/egovridc/Desktop/Steve/DjangoTutorial/alpha/media/img/22/' + file
     
             
     if mode == "Facial Scan":
@@ -144,7 +156,7 @@ def stream(request):
 class VideoCamera(object):
     
     def __init__(self):
-        self.video = cv2.VideoCapture("http://10.42.0.45:8080/video")
+        self.video = cv2.VideoCapture(0)
         (self.grabbed, self.frame) = self.video.read()
         threading.Thread(target=self.update, args=()).start()
     
@@ -239,7 +251,7 @@ def qrstream(request):
 class VideoCamera2(object):
     
     def __init__(self):
-        self.video = cv2.VideoCapture("http://10.42.0.45:8080/video")
+        self.video = cv2.VideoCapture(0)
         (self.qrgrabbed, self.qrframe) = self.video.read()
         threading.Thread(target=self.update, args=()).start()
     
@@ -283,4 +295,10 @@ class VideoCamera2(object):
     
 
 
+class ListCreateOriginalImage(ListCreateAPIView):
+    queryset = OriginalImage.objects.all()
+    serializer_class = OriginalImageSerializer
     
+class ListCreateScannedImage(ListCreateAPIView):
+    queryset = ScannedImage.objects.all()
+    serializer_class = ScannedImageSerializer
